@@ -7,7 +7,7 @@
 Requirements = (Target.hasCHTCStaging == true)
 
 # Provide HTCondor with the name of the Docker container
-container_image = docker://jespina/chtc-seacr:1.0
+container_image = docker://jespina/chtc-seacr:dev
 universe = container
 
 # $bam specifies the bam file
@@ -17,9 +17,9 @@ arguments = $(bam)
 # specify name of the log, standard error, and standard output files 
 # $(Cluster) represents queue number assigned to this set of jobs at the time of submission
 # $(Process) is integer number for each job starting from "0"
-log = $(bam)_bamcoverage_$(Cluster)_$(Process).log
-error = $(bam)_bamcoverage_$(Cluster)_$(Process).err
-output = $(bam)_bamcoverage_$(Cluster)_$(Process).out
+log = $(bam)_seacr-prep_$(Cluster)_$(Process).log
+error = $(bam)_seacr-prep_$(Cluster)_$(Process).err
+output = $(bam)_seacr-prep_$(Cluster)_$(Process).out
    
 # transfer files in/out of /home/{net-id}/
 # transfer output files on exit from compute node

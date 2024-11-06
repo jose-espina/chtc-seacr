@@ -6,7 +6,7 @@
 
 # mkdir
 export HOME=$PWD
-mkdir -p input output
+mkdir -p input work output
 
 # assign bam to $1
 bam=$1
@@ -23,11 +23,12 @@ samplename=`basename $bam .bam`
 echo "Converting" $bam "to bedgraph"
 
 # convert to bedgraph
-bedtools bamtobed -bedpe -i input/$bam > input/${samplename}.bed
-awk '$1==$4 && $6-$2 < 1000 {print $0}' input/${samplename}.bed > input/${samplename}.clean.bed
-cut -f 1,2,6 input/${samplename}.clean.bed | sort -k1,1 -k2,2n -k3,3n > input/${samplename}.fragments.bed
-grep -i "^chr" input/${samplename}.fragments.bed > input/${samplename}_clean.fragments.bed
-bedtools genomecov -bg -i ${samplename}_clean.fragments.bed -g input/mm10.chrom.sizes.txt > output/${samplename}_clean.fragments.bedgraph
+samtools sort -n input/$bam -o work/${samplename}_sorted.bam
+bedtools bamtobed -bedpe -i work/${samplename}_sorted.bam > work/${samplename}.bed
+awk '$1==$4 && $6-$2 < 1000 {print $0}' work/${samplename}.bed > work/${samplename}.clean.bed
+cut -f 1,2,6 work/${samplename}.clean.bed | sort -k1,1 -k2,2n -k3,3n > work/${samplename}.fragments.bed
+grep -i "^chr" work/${samplename}.fragments.bed > work/${samplename}_clean.fragments.bed
+bedtools genomecov -bg -i work/${samplename}_clean.fragments.bed -g input/mm10.chrom.sizes.txt > output/${samplename}_clean.fragments.bedgraph
 
 # move bedgraph to staging
 cd output
@@ -35,6 +36,6 @@ mv ${samplename}_clean.fragments.bedgraph /staging/groups/roopra_group/jespina
 cd ~
 
 # before script exits, remove files from working directory
-rm -r input output
+rm -r input work output
 
 ###END
